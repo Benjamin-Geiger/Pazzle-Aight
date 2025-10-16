@@ -1,6 +1,7 @@
 import random
 from contextlib import nullcontext
 from fileinput import close
+import time
 
 import heapq
 # Ubung 1 AI
@@ -36,7 +37,7 @@ def generatePuzzle():
             return puzzle
 
 #-----------------------
-print ("Gnerated Puzzle: ", generatePuzzle())
+print ("Generated Puzzle: ", generatePuzzle())
 
 #------------------------
 #Hamming distance ->
@@ -173,7 +174,7 @@ print( "algo a_*: ")
 from heapq import heappush, heappop
 
 
-def astar(start, goal):
+def astar(start, goal, heuristic):
     open_list = []
     heappush(open_list, (0, start))
     closed = set()
@@ -183,7 +184,7 @@ def astar(start, goal):
     #def heuristic(state):
         #return sum(abs((val - 1) % 3 - i % 3) + abs((val - 1) // 3 - i // 3)
                   # for i, val in enumerate(state) if val != 0)
-
+    starttime = time.time()
     while open_list:
         f, current = heappop(open_list)
         current_t = tuple(current)
@@ -193,7 +194,12 @@ def astar(start, goal):
         closed.add(current_t)
 
         if current == goal:
+            endtime = time.time()
+            totaltime = endtime - starttime
+            print(f"Time needed: {totaltime:.5f} seconds ")
             return {"steps": g_cost[current_t], "expanded": len(closed)}
+
+
 
         zero = current.index(0)
         x, y = divmod(zero, 3)
@@ -207,7 +213,7 @@ def astar(start, goal):
                 new_t = tuple(new_state)
                 if new_t not in closed:
                     new_g = g_cost[current_t] + 1
-                    f = new_g + hamming(new_state,goal)
+                    f = new_g + heuristic(new_state,goal)
                     heappush(open_list, (f, new_state))
                     g_cost[new_t] = new_g
 
@@ -217,4 +223,4 @@ def astar(start, goal):
 
 
 #print( algo_a(tempTest, Goal, manhatten))
-print (astar(tempTest, Goal))
+print (astar(tempTest, Goal, manhatten))
