@@ -7,7 +7,8 @@ import  statistics
 import heapq
 # Ubung 1 AI
 
-#-------------------
+
+Goal= [1,2,3,4,5,6,7,8,0] #for global usa
 
 def solvablePuzzle(input):
     """
@@ -28,56 +29,72 @@ def solvablePuzzle(input):
 
     return (inv % 2) == 0
 
-#---------------------
+
 #Tests
 #print ("Ergebnis:", solvablePuzzle([2,1,3,4,5,6,7,8,0]))
 #print ("Ergebnis:", solvablePuzzle([2,3,1,4,5,6,7,8,0]))
 
-#---------------------
+
 #gnerate random 9 numbers that are solvable
 def generatePuzzle():
 
+    """
+    This method generates random puzzle arrangements of length 9,
+     it also checks if the puzzle is solvable using the previous method.
+    :return: returns the solvable puzzle as list of integers
+    """
     while True:
         puzzle= list(range (9))
         random.shuffle(puzzle)
         if solvablePuzzle(puzzle):
             return puzzle
 
-#-----------------------
+
 print ("Generated Puzzle: ", generatePuzzle())
 
-#------------------------
-#Hamming distance ->
+
+#Hamming distance -->
 
 def hamming (puzzle, goal):
 
+    """
+    The hamming functions is a heuristic that calculates the hamming distance
+    (number of misplaced tiles) that are not in their goal state, excluding the empty tile.
+    :param puzzle: the random and solvable puzzle
+    :param goal: the predefined goal state
+    :return: returns the count of the number of misplaced tiles
+    """
     count = 0
     #for i in range(len(puzzle)):
     for i, value in enumerate(puzzle):      # enumerate returns position with the value on it
         if value != goal[i] and value != 0:
             count += 1
 
-
     return count
 
 
 tempTest =[2,3,1,4,5,6,7,8,0]
-#GOAL
-#Goal= [0,1,2,3,4,5,6,7,8]
-Goal= [1,2,3,4,5,6,7,8,0]
+
+
 
 
 
 #print ("Hamming: ", hamming(generatePuzzle(), Goal))
-print ("solveable: ", solvablePuzzle(tempTest))
+print ("solvable: ", solvablePuzzle(tempTest))
 print ("Hamming: ", hamming(tempTest, Goal))
 
 
-#-------------------------
-#Manhatten-> abs(currentR - goalR) + abs(currentC - goalC)
-def manhatten(puzzle, goal):
 
-    #posG=
+#Manhatten-> abs(currentR - goalR) + abs(currentC - goalC)
+def manhattan(puzzle, goal):
+
+    """
+    The manhattan distance calculates the sum of vertical and horizontal differences between each tile and it's goal state
+    :param puzzle: the random and solvable puzzle
+    :param goal: the goal state that was predefined
+    :return: the total manhattan distance
+    """
+
     total = 0
     size=3
     # list of postions of goal
@@ -99,7 +116,7 @@ def manhatten(puzzle, goal):
             goalR= gid //size
             goalC= gid %size
 
-            #manhatten
+            #manhattan
             distance = abs(currentR - goalR)+abs(currentC - goalC)
             total = total + distance
 
@@ -108,12 +125,11 @@ def manhatten(puzzle, goal):
 
     return total
 
+print("Manhattan Dist.: ", manhattan(tempTest, Goal))
 
-print("Manhatten Dist.: ", manhatten(tempTest, Goal))
 
-#--------------------------
 
-#netxt move = cost now + evaluation of distanc(manhatten/ hamming)
+#netxt move = cost now + evaluation of distanc(manhattan/ hamming)
 
 
 #--possible moves
@@ -136,7 +152,7 @@ def get_neighbors(state):
 
 
 
-#---------------------
+
 #g(x) =Cost
 #h(x) = estimate to goal
 #f(x) = total estimate cost
@@ -167,7 +183,7 @@ def algo_a(start,goal, heuristic):
 
 print( "algo a_*: ")
 
-#print (algo_a(tempTest, Goal, manhatten))
+#print (algo_a(tempTest, Goal, manhattan))
 
 # second try
 
@@ -222,8 +238,8 @@ def astar(start, goal, heuristic):
 
 
 
-#print( algo_a(tempTest, Goal, manhatten))
-#print (astar(tempTest, Goal, manhatten))
+#print( algo_a(tempTest, Goal, manhattan))
+#print (astar(tempTest, Goal, manhattan))
 
 
 def test_100 (heuristic, test):
@@ -262,6 +278,6 @@ def test_100 (heuristic, test):
 
 
 
-test_100(manhatten, 100)
+test_100(manhattan, 100)
 test_100(hamming, 100)
 
