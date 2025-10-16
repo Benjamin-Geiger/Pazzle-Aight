@@ -3,14 +3,15 @@ from contextlib import nullcontext
 from fileinput import close
 import time
 import  statistics
-
 import heapq
+from heapq import heappush, heappop
 # Ubung 1 AI
 
 #-------------------
 
 def solvablePuzzle(input):
     """
+
     :param input: array containing the puzzle layout and
     checks it for solvability based on the inversion count (even number == true).
     :return: returns a boolean value indicating whether the puzzle is solvable or not
@@ -118,6 +119,14 @@ print("Manhatten Dist.: ", manhatten(tempTest, Goal))
 
 #--possible moves
 def get_neighbors(state):
+
+    """
+    Generates all possible next puzzle states by moving the empty tile (0)
+    one step up, down, left, or right, if possible.
+    Used by the A* algorithm to explore the search tree.
+    :param state: current state of the puzzle
+    :return: list of all valid successor states (each also a list of 9 numbers).
+    """
     #all possilbe neigbors moves
     neighbors = []
     size = 3
@@ -136,45 +145,16 @@ def get_neighbors(state):
 
 
 
-#---------------------
-#g(x) =Cost
-#h(x) = estimate to goal
-#f(x) = total estimate cost
-def algo_a(start,goal, heuristic):
-    open_list = []
-    # save as tupel with priority 0
-    heapq.heappush(open_list, (0, start))
-    # dictionary g -> lists not hashable
-    g = {tuple(start): 0}
-    expanded = 0
-
-    while open_list:
-        _, current = heapq.heappop(open_list)
-        expanded += 1
-
-        if current == goal:
-            return {"steps": g[tuple(current)], "expanded": expanded}
-
-        for neighbor in get_neighbors(current):
-            new_g = g[tuple(current)] + 1
-            if tuple(neighbor) not in g or new_g < g[tuple(neighbor)]:
-                g[tuple(neighbor)] = new_g
-                f = new_g + heuristic(neighbor, goal)
-                heapq.heappush(open_list, (f, neighbor))
-
-    return {"steps": -1, "expanded": expanded}
-
-
-print( "algo a_*: ")
-
-#print (algo_a(tempTest, Goal, manhatten))
-
-# second try
-
-from heapq import heappush, heappop
-
-
 def astar(start, goal, heuristic):
+
+    """
+    Performs the A* search algorithm to find the shortest path
+    from a start state to the goal state using the given heuristic.
+    :param start: starting configuration of 8-puzzle
+    :param goal: goal state of 8-puzzle
+    :param heuristic:  heuristic function used (manhattan or hamming)
+    :return:contains steps, number of expanded nodes, and runtime
+    """
     open_list = []
     heappush(open_list, (0, start))
     closed = set()
@@ -219,18 +199,21 @@ def astar(start, goal, heuristic):
 
     return None
 
-
-
-
 #print( algo_a(tempTest, Goal, manhatten))
 #print (astar(tempTest, Goal, manhatten))
 
 
 def test_100 (heuristic, test):
 
+    """
+    Tests the A* algorithm on 100 random solvable 8-puzzles using the heuristic it gests as input .
+    And measures and calculates average runtime and memory usage, of the  A* with the given heuristic..
+    :param heuristic: either manhatten or hamming
+    :param test: the number of test done in the function
+    :return: average and standard deviation of runtime and expanded nodes
+    """
     runtimes=[]
     expanded_nodes=[]
-
 
     for y in range(test):
         randomPuzzle= generatePuzzle()
@@ -262,6 +245,12 @@ def test_100 (heuristic, test):
 
 
 
-test_100(manhatten, 100)
-test_100(hamming, 100)
+#test_100(manhatten, 100)
+#test_100(hamming, 100)
+
+temp2=[8,6,7,2,5,4,3,0,1]
+temp3=[2,3,1,4,5,6,7,8,0]
+
+if solvablePuzzle(temp3):
+    print (astar(temp3,Goal,manhatten))
 
