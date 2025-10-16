@@ -8,8 +8,13 @@ import heapq
 # Ubung 1 AI
 
 #-------------------
-#check solvability with inversion -> even number true
+
 def solvablePuzzle(input):
+    """
+    :param input: array containing the puzzle layout and
+    checks it for solvability based on the inversion count (even number == true).
+    :return: returns a boolean value indicating whether the puzzle is solvable or not
+    """
 
 
     arr=[x for x in input if x != 0]
