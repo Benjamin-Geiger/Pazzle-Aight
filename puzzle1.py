@@ -2,6 +2,7 @@ import random
 from contextlib import nullcontext
 from fileinput import close
 import time
+import  statistics
 
 import heapq
 # Ubung 1 AI
@@ -9,6 +10,7 @@ import heapq
 #-------------------
 #check solvability with inversion -> even number true
 def solvablePuzzle(input):
+
 
     arr=[x for x in input if x != 0]
     length = len(arr)
@@ -76,7 +78,7 @@ def manhatten(puzzle, goal):
     # list of postions of goal
     # [0/1 , 1/2 , 2/3 ,.....8/0]
     posG=list(enumerate(goal))
-    print ("Positions goal:2", posG)
+    #print ("Positions goal:2", posG)
 
     #faster lookup then goal.index[value] -> lookup table
     goalPos = {val: id for id, val in posG}
@@ -96,8 +98,8 @@ def manhatten(puzzle, goal):
             distance = abs(currentR - goalR)+abs(currentC - goalC)
             total = total + distance
 
-            if value != goal[position]:
-                print(f"Kachel {value}: aktuell idx={position} -> ziel idx={gid}  d={distance}")
+            #if value != goal[position]:
+                #print(f"Kachel {value}: aktuell idx={position} -> ziel idx={gid}  d={distance}")
 
     return total
 
@@ -107,16 +109,9 @@ print("Manhatten Dist.: ", manhatten(tempTest, Goal))
 #--------------------------
 
 #netxt move = cost now + evaluation of distanc(manhatten/ hamming)
-# moves
-def move (state):
 
 
-    return 0
-
-
-
-#--------------
-#mpossible moves
+#--possible moves
 def get_neighbors(state):
     #all possilbe neigbors moves
     neighbors = []
@@ -196,8 +191,8 @@ def astar(start, goal, heuristic):
         if current == goal:
             endtime = time.time()
             totaltime = endtime - starttime
-            print(f"Time needed: {totaltime:.5f} seconds ")
-            return {"steps": g_cost[current_t], "expanded": len(closed)}
+            #print(f"Time needed: {totaltime:.5f} seconds ")
+            return {"steps": g_cost[current_t], "expanded": len(closed), "runtime": round(totaltime, 5)}
 
 
 
@@ -223,4 +218,45 @@ def astar(start, goal, heuristic):
 
 
 #print( algo_a(tempTest, Goal, manhatten))
-print (astar(tempTest, Goal, manhatten))
+#print (astar(tempTest, Goal, manhatten))
+
+
+def test_100 (heuristic, test):
+
+    runtimes=[]
+    expanded_nodes=[]
+
+
+    for y in range(test):
+        randomPuzzle= generatePuzzle()
+        print(randomPuzzle)
+
+        if solvablePuzzle(randomPuzzle):
+            result= astar(randomPuzzle, Goal,heuristic)
+
+            runtimes.append(result["runtime"])
+            expanded_nodes.append(result["expanded"])
+
+    avg_time = statistics.mean(runtimes)
+    std_time = statistics.stdev(runtimes)
+    avg_expanded = statistics.mean(expanded_nodes)
+    std_expanded = statistics.stdev(expanded_nodes)
+
+    print(f"--- Results for {heuristic.__name__} ---")
+    print(f"Average Runtime: {avg_time:.5f}s ± {std_time:.5f}")
+    print(f"Average expanded Nodes: {avg_expanded:.2f} ± {std_expanded:.2f}")
+    print()
+
+    return {
+        "heuristic": heuristic.__name__,
+        "avg_time": avg_time,
+        "std_time": std_time,
+        "avg_expanded": avg_expanded,
+        "std_expanded": std_expanded
+    }
+
+
+
+test_100(manhatten, 100)
+test_100(hamming, 100)
+
