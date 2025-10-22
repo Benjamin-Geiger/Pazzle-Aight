@@ -3,8 +3,8 @@ from contextlib import nullcontext
 from fileinput import close
 import time
 import  statistics
-
 import heapq
+from heapq import heappush, heappop
 # Ubung 1 AI
 
 
@@ -12,6 +12,7 @@ Goal= [1,2,3,4,5,6,7,8,0] #for global usa
 
 def solvablePuzzle(input):
     """
+
     :param input: array containing the puzzle layout and
     checks it for solvability based on the inversion count (even number == true).
     :return: returns a boolean value indicating whether the puzzle is solvable or not
@@ -134,6 +135,14 @@ print("Manhattan Dist.: ", manhattan(tempTest, Goal))
 
 #--possible moves
 def get_neighbors(state):
+
+    """
+    Generates all possible next puzzle states by moving the empty tile (0)
+    one step up, down, left, or right, if possible.
+    Used by the A* algorithm to explore the search tree.
+    :param state: current state of the puzzle
+    :return: list of all valid successor states (each also a list of 9 numbers).
+    """
     #all possilbe neigbors moves
     neighbors = []
     size = 3
@@ -191,6 +200,15 @@ from heapq import heappush, heappop
 
 
 def astar(start, goal, heuristic):
+
+    """
+    Performs the A* search algorithm to find the shortest path
+    from a start state to the goal state using the given heuristic.
+    :param start: starting configuration of 8-puzzle
+    :param goal: goal state of 8-puzzle
+    :param heuristic:  heuristic function used (manhattan or hamming)
+    :return:contains steps, number of expanded nodes, and runtime
+    """
     open_list = []
     heappush(open_list, (0, start))
     closed = set()
@@ -235,18 +253,21 @@ def astar(start, goal, heuristic):
 
     return None
 
-
-
-
-#print( algo_a(tempTest, Goal, manhattan))
-#print (astar(tempTest, Goal, manhattan))
+#print( algo_a(tempTest, Goal, manhatten))
+#print (astar(tempTest, Goal, manhatten))
 
 
 def test_100 (heuristic, test):
 
+    """
+    Tests the A* algorithm on 100 random solvable 8-puzzles using the heuristic it gests as input .
+    And measures and calculates average runtime and memory usage, of the  A* with the given heuristic..
+    :param heuristic: either manhatten or hamming
+    :param test: the number of test done in the function
+    :return: average and standard deviation of runtime and expanded nodes
+    """
     runtimes=[]
     expanded_nodes=[]
-
 
     for y in range(test):
         randomPuzzle= generatePuzzle()
@@ -280,4 +301,12 @@ def test_100 (heuristic, test):
 
 test_100(manhattan, 100)
 test_100(hamming, 100)
+#test_100(manhatten, 100)
+#test_100(hamming, 100)
+
+temp2=[8,6,7,2,5,4,3,0,1]
+temp3=[2,3,1,4,5,6,7,8,0]
+
+if solvablePuzzle(temp3):
+    print (astar(temp3,Goal,manhattan))
 
