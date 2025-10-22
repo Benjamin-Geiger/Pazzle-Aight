@@ -42,7 +42,7 @@ def generatePuzzle():
     """
     This method generates random puzzle arrangements of length 9,
      it also checks if the puzzle is solvable using the previous method.
-    :return: returns the solvable puzzle as list of integers.
+    :return: returns the solvable puzzle as list of integers
     """
     while True:
         puzzle= list(range (9))
