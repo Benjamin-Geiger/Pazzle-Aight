@@ -243,3 +243,5 @@ def test_100 (heuristic, test):
 
 test_100(manhattan, 100)
 test_100(hamming, 100)
+
+input("Press Enter to exit...")
