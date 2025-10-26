@@ -1,9 +1,6 @@
 import random
-from contextlib import nullcontext
-from fileinput import close
 import time
 import  statistics
-import heapq
 from heapq import heappush, heappop
 # Ubung 1 AI
 
@@ -12,12 +9,10 @@ Goal= [1,2,3,4,5,6,7,8,0] #for global usa
 
 def solvablePuzzle(input):
     """
-
     :param input: array containing the puzzle layout and
     checks it for solvability based on the inversion count (even number == true).
     :return: returns a boolean value indicating whether the puzzle is solvable or not
     """
-
 
     arr=[x for x in input if x != 0]
     length = len(arr)
@@ -31,9 +26,6 @@ def solvablePuzzle(input):
     return (inv % 2) == 0
 
 
-#Tests
-#print ("Ergebnis:", solvablePuzzle([2,1,3,4,5,6,7,8,0]))
-#print ("Ergebnis:", solvablePuzzle([2,3,1,4,5,6,7,8,0]))
 
 
 #gnerate random 9 numbers that are solvable
@@ -51,11 +43,9 @@ def generatePuzzle():
             return puzzle
 
 
-print ("Generated Puzzle: ", generatePuzzle())
 
 
-#Hamming distance -->
-
+#Hamming distance
 def hamming (puzzle, goal):
 
     """
@@ -74,15 +64,11 @@ def hamming (puzzle, goal):
     return count
 
 
-tempTest =[2,3,1,4,5,6,7,8,0]
-
-
-
-
-
+#Tests
+#tempTest =[2,3,1,4,5,6,7,8,0]
 #print ("Hamming: ", hamming(generatePuzzle(), Goal))
-print ("solvable: ", solvablePuzzle(tempTest))
-print ("Hamming: ", hamming(tempTest, Goal))
+#print ("solvable: ", solvablePuzzle(tempTest))
+#print ("Hamming: ", hamming(tempTest, Goal))
 
 
 
@@ -101,7 +87,6 @@ def manhattan(puzzle, goal):
     # list of postions of goal
     # [0/1 , 1/2 , 2/3 ,.....8/0]
     posG=list(enumerate(goal))
-    #print ("Positions goal:2", posG)
 
     #faster lookup then goal.index[value] -> lookup table
     goalPos = {val: id for id, val in posG}
@@ -121,18 +106,15 @@ def manhattan(puzzle, goal):
             distance = abs(currentR - goalR)+abs(currentC - goalC)
             total = total + distance
 
+            #test output
             #if value != goal[position]:
                 #print(f"Kachel {value}: aktuell idx={position} -> ziel idx={gid}  d={distance}")
 
     return total
 
-print("Manhattan Dist.: ", manhattan(tempTest, Goal))
 
 
-
-#netxt move = cost now + evaluation of distanc(manhattan/ hamming)
-
-
+#next move = cost now + evaluation of distanc(manhattan/ hamming)
 #--possible moves
 def get_neighbors(state):
 
@@ -165,40 +147,6 @@ def get_neighbors(state):
 #g(x) =Cost
 #h(x) = estimate to goal
 #f(x) = total estimate cost
-def algo_a(start,goal, heuristic):
-    open_list = []
-    # save as tupel with priority 0
-    heapq.heappush(open_list, (0, start))
-    # dictionary g -> lists not hashable
-    g = {tuple(start): 0}
-    expanded = 0
-
-    while open_list:
-        _, current = heapq.heappop(open_list)
-        expanded += 1
-
-        if current == goal:
-            return {"steps": g[tuple(current)], "expanded": expanded}
-
-        for neighbor in get_neighbors(current):
-            new_g = g[tuple(current)] + 1
-            if tuple(neighbor) not in g or new_g < g[tuple(neighbor)]:
-                g[tuple(neighbor)] = new_g
-                f = new_g + heuristic(neighbor, goal)
-                heapq.heappush(open_list, (f, neighbor))
-
-    return {"steps": -1, "expanded": expanded}
-
-
-print( "algo a_*: ")
-
-#print (algo_a(tempTest, Goal, manhattan))
-
-# second try
-
-from heapq import heappush, heappop
-
-
 def astar(start, goal, heuristic):
 
     """
@@ -230,29 +178,24 @@ def astar(start, goal, heuristic):
         if current == goal:
             endtime = time.time()
             totaltime = endtime - starttime
-            #print(f"Time needed: {totaltime:.5f} seconds ")
             return {"steps": g_cost[current_t], "expanded": len(closed), "runtime": round(totaltime, 5)}
 
 
 
-        zero = current.index(0)
-        x, y = divmod(zero, 3)
-        moves = []
-        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < 3 and 0 <= ny < 3:
-                new_state = current[:]
-                new_zero = nx * 3 + ny
-                new_state[zero], new_state[new_zero] = new_state[new_zero], new_state[zero]
-                new_t = tuple(new_state)
-                if new_t not in closed:
-                    new_g = g_cost[current_t] + 1
-                    f = new_g + heuristic(new_state,goal)
-                    heappush(open_list, (f, new_state))
-                    g_cost[new_t] = new_g
+        for neighbor in get_neighbors(current):
+            new_t = tuple(neighbor)
+            if new_t not in closed:
+                # Calculate the cost to reach the neighbor
+                new_g = g_cost[current_t] + 1
+                f = new_g + heuristic(neighbor, goal)
+                # Push new state to open list
+                heappush(open_list, (f, neighbor))
+                g_cost[new_t] = new_g
+
 
     return None
 
+#Tests
 #print( algo_a(tempTest, Goal, manhatten))
 #print (astar(tempTest, Goal, manhatten))
 
@@ -298,15 +241,5 @@ def test_100 (heuristic, test):
     }
 
 
-
 test_100(manhattan, 100)
 test_100(hamming, 100)
-#test_100(manhatten, 100)
-#test_100(hamming, 100)
-
-temp2=[8,6,7,2,5,4,3,0,1]
-temp3=[2,3,1,4,5,6,7,8,0]
-
-if solvablePuzzle(temp3):
-    print (astar(temp3,Goal,manhattan))
-
